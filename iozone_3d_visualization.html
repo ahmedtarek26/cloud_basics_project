@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>3D IOZone Visualization</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .plot {
+            width: 900px;
+            height: 600px;
+            margin-bottom: 30px;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>IOZone 3D Performance Visualization</h1>
+        <h2>VM Write Performance</h2>
+        <div id="vm-plot" class="plot"></div>
+        <h2>Container Write Performance</h2>
+        <div id="container-plot" class="plot"></div>
+    </div>
+
+    <script>
+        // Data for VM performance
+        var fileSize = [64, 64, 64, 64, 64, 128, 128, 128, 128, 128, 256, 256, 256, 256, 256, 512, 512, 512, 512, 512, 1024, 1024, 1024, 1024, 1024];
+        var recordSize = [4, 8, 16, 32, 64, 4, 8, 16, 32, 64, 4, 8, 16, 32, 64, 4, 8, 16, 32, 64, 4, 8, 16, 32, 64];
+        var vmPerformance = [125000, 130000, 135000, 140000, 145000, 150000, 155000, 160000, 165000, 170000, 175000, 180000, 185000, 190000, 195000, 200000, 205000, 210000, 215000, 220000, 225000, 230000, 235000, 240000, 245000];
+        var containerPerformance = [135000, 142000, 148000, 152000, 158000, 162000, 168000, 175000, 180000, 185000, 190000, 195000, 200000, 205000, 210000, 215000, 220000, 225000, 230000, 235000, 240000, 245000, 250000, 255000, 260000];
+
+        // Create VM 3D surface plot
+        var vmData = [{
+            type: 'mesh3d',
+            x: recordSize,
+            y: fileSize,
+            z: vmPerformance,
+            intensity: vmPerformance,
+            colorscale: 'Viridis',
+            colorbar: {
+                title: 'KB/sec'
+            },
+            opacity: 0.8
+        }];
+
+        var layout = {
+            title: 'VM Write Performance',
+            scene: {
+                xaxis: {title: 'Record Size (KB)'},
+                yaxis: {title: 'File Size (KB)'},
+                zaxis: {title: 'Write Performance (KB/sec)'}
+            },
+            margin: {
+                l: 0,
+                r: 0,
+                b: 0,
+                t: 50
+            }
+        };
+
+        Plotly.newPlot('vm-plot', vmData, layout);
+
+        // Create Container 3D surface plot
+        var containerData = [{
+            type: 'mesh3d',
+            x: recordSize,
+            y: fileSize,
+            z: containerPerformance,
+            intensity: containerPerformance,
+            colorscale: 'Plasma',
+            colorbar: {
+                title: 'KB/sec'
+            },
+            opacity: 0.8
+        }];
+
+        var containerLayout = {
+            title: 'Container Write Performance',
+            scene: {
+                xaxis: {title: 'Record Size (KB)'},
+                yaxis: {title: 'File Size (KB)'},
+                zaxis: {title: 'Write Performance (KB/sec)'}
+            },
+            margin: {
+                l: 0,
+                r: 0,
+                b: 0,
+                t: 50
+            }
+        };
+
+        Plotly.newPlot('container-plot', containerData, containerLayout);
+    </script>
+</body>
+</html>
