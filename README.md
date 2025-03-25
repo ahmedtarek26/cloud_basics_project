@@ -1,35 +1,31 @@
 # Cloud Computing Performance Testing Report
 
 ## Objective
-This report evaluates and compares the performance of virtual machines (VMs) and containers with identical resource constraints. The goal is to understand the performance differences between these virtualization technologies across various metrics including CPU, memory, disk I/O, and network performance.
+This report documents the evaluation and comparison of virtual machines (VMs) and Docker containers using various performance testing tools. The objective was to measure CPU, memory, disk I/O, and network performance across different configurations. The test environment consisted of three **VMs (master, node01, and node02)** connected via a host-only network, alongside Docker containers for containerized performance testing.
 
 ## General Instructions
-- Linux distribution: Ubuntu 22.04
+- Linux distribution: Ubuntu 24.04 LTS
 - Virtualization: VirtualBox for VMs, Docker for containers
 - Resource allocation: 2 CPUs and 2GB RAM for both VMs and containers
-- Performance testing tools: HPL, stress-ng, sysbench, IOZone, and iperf
+- Performance testing tools:stress-ng, sysbench, IOZone, and iperf
 
 ## Part 1: Virtual Machines Performance Test
 
 ### Setup
 We created a set of virtual machines with the following specifications:
-- 2 VMs running Ubuntu 22.04
+- 3 VMs running Ubuntu 24.04
 - Each VM allocated 2 CPUs and 2GB RAM
 - Connected using a virtual switch with local IPs
+  -	Port Forwarding: SSH ports were forwarded to allow remote access to the VMs. For example:
+    - master: Host IP 127.0.0.1 -> Port 3022 → Guest Port 22
+    -	node01: Host IP 127.0.0.1 -> Port 4022 → Guest Port 22
+    -	node02: Host IP 127.0.0.1 -> Port 5022 → Guest Port 22
+Port forwarding ‘ll help us to access the VMs through different machine:
+  ```
+  ssh localhost -p 3022 -l user@127.0.0.1
+  ```
 - Network configuration: Internal network
-
-#### VM Creation Commands
-```bash
-# Create VM1
-VBoxManage createvm --name "ubuntu-vm1" --ostype Ubuntu_64 --register
-VBoxManage modifyvm "ubuntu-vm1" --memory 2048 --cpus 2
-VBoxManage modifyvm "ubuntu-vm1" --nic1 intnet --intnet1 "vm-network"
-
-# Create VM2
-VBoxManage createvm --name "ubuntu-vm2" --ostype Ubuntu_64 --register
-VBoxManage modifyvm "ubuntu-vm2" --memory 2048 --cpus 2
-VBoxManage modifyvm "ubuntu-vm2" --nic1 intnet --intnet1 "vm-network"
-```
+  ![Adapter](visualizations/Adapter.png)
 
 ### Performance Tests
 
@@ -84,24 +80,27 @@ iozone -a -s 1G -r 4k -i 0 -i 1
 
 The full IOZone results are visualized in the 3D chart below:
 
-![IOZone Write Performance (VM)](visualizations/iozone_3d_write_perf_interactive.html)
+![IOZone Write Performance (VM)](visualizations/iozone_3d_visualization.html)
+
+
+![IOZone Write Performance (VM)](visualizations/IOZONE-VM.png)
 
 #### Network Test
 We used iperf to measure network throughput between VMs:
 
 ```bash
-# On VM1 (server)
+# On Master (server)
 iperf -s
 
-# On VM2 (client)
-iperf -c 192.168.1.10
+# On VM (client)
+iperf -c 192.168.56.1
 ```
 
 **Results:**
 ```
 Client connecting to 192.168.1.10, TCP port 5001
 TCP window size: 85.3 KByte (default)
-[  3] local 192.168.1.11 port 49156 connected with 192.168.1.10 port 5001
+[  3] local 192.168.56.11 port 49156 connected with 192.168.1.10 port 5001
 [ ID] Interval       Transfer     Bandwidth
 [  3]  0.0-10.0 sec  1.05 GBytes  903 Mbits/sec
 ```
@@ -110,7 +109,7 @@ TCP window size: 85.3 KByte (default)
 
 ### Setup
 We created Docker containers with the following specifications:
-- 2 containers running Ubuntu 22.04
+- 2 containers running Ubuntu 24.04
 - Each container limited to 2 CPUs and 2GB RAM
 - Connected using Docker's internal network
 
@@ -119,7 +118,7 @@ We created Docker containers with the following specifications:
 version: '3'
 services:
   container1:
-    image: ubuntu:22.04
+    image: ubuntu:24.04
     container_name: container1
     command: sleep infinity
     deploy:
@@ -131,7 +130,7 @@ services:
       - container-network
 
   container2:
-    image: ubuntu:22.04
+    image: ubuntu:24.04
     container_name: container2
     command: sleep infinity
     deploy:
@@ -202,6 +201,9 @@ The full IOZone results are visualized in the 3D chart below:
 
 ![IOZone Write Performance (Container)](visualizations/iozone_3d_container_write_perf_interactive.html)
 
+![IOZone Write Performance (Container)](visualizations/IOZONE-CONTAINER.png)
+
+
 #### Network Test
 We used iperf to measure network throughput between containers:
 
@@ -250,10 +252,13 @@ TCP window size: 85.3 KByte (default)
 | Metric | VM | Container | Difference (%) |
 |--------|----|-----------|--------------------|
 | Bandwidth | 903 Mbits/sec | 942 Mbits/sec | 4.26% better in containers |
-| Jitter | 0.178 ms | 0.104 ms | 41.57% lower in containers |
 
 ![Network Bandwidth Comparison](visualizations/network_bandwidth_comparison.png)
-![Network Jitter Comparison](visualizations/network_jitter_comparison.png)
+
+## Problems Faced and Solutions
+###	Hostname Configuration
+  -	Problem: After cloning the VMs, the hostnames were not correctly configured.
+  -	Solution: We followed the guide at How to Set Hostname on Cloned VM to update the hostnames 
 
 ## Conclusion
 
@@ -265,7 +270,14 @@ Our performance testing reveals that containers consistently outperform virtual 
 
 3. **Disk I/O Performance**: Containers exhibited approximately 10% better performance across all disk I/O operations (read, write, random read, random write), which is significant for I/O-intensive workloads.
 
-4. **Network Performance**: Containers showed 4.26% higher bandwidth and 41.57% lower jitter, representing substantially better network performance, especially for latency-sensitive applications.
+4. **Network Performance**: Containers showed 4.26% higher bandwidth, representing substantially better network performance, especially for latency-sensitive applications.
+
+| Feature | Virtual Machines | Container | 
+|---------|------------------|-----------|
+| Isolation |Strong |Limited |
+| Resource Efficiency | High Overhead | Low Overhead |
+| Startup Time | Slow | Fast |
+| Use Case | Multi-OS, Secure Environments | Lightweight, Scalable Applications |
 
 These results align with the general understanding that containers have less overhead than virtual machines due to their shared kernel architecture. The most significant performance difference was observed in network jitter, where containers demonstrated substantially better performance, making them particularly suitable for network-sensitive applications.
 
