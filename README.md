@@ -258,7 +258,7 @@ TCP window size: 85.3 KByte (default)
 ## Problems Faced and Solutions
 ###	Hostname Configuration
   -	Problem: After cloning the VMs, the hostnames were not correctly configured.
-  -	Solution: We followed the guide at How to Set Hostname on Cloned VM to update the hostnames 
+  -	Solution: We followed the guide at [How to Set Hostname on Cloned VM](https://community.clearlinux.org/t/how-set-hostname-on-cloned-vm/1599) to update the hostnames 
 
 ## Conclusion
 
