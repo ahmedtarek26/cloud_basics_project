@@ -272,7 +272,7 @@ Our performance testing reveals that containers consistently outperform virtual 
 
 4. **Network Performance**: Containers showed 4.26% higher bandwidth, representing substantially better network performance, especially for latency-sensitive applications.
 
-| Feature | Virtual Machines | Container | 
+|Feature | Virtual Machines | Container | 
 |---------|------------------|-----------|
 | Isolation |Strong |Limited |
 | Resource Efficiency | High Overhead | Low Overhead |
