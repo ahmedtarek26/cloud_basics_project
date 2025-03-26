@@ -233,32 +233,6 @@ RUN apt-get update && apt-get install -y \
     sudo \
     && rm -rf /var/lib/apt/lists/*
 
-# Create SSH folder and set correct permissions
-RUN mkdir -p /var/run/sshd /home/user/.ssh /shared/results \
-    && chmod 700 /home/user/.ssh /shared/results
-
-# Create a new user 'user' with a home directory
-RUN useradd -m -s /bin/bash user \
-    && echo "user:cloud" | chpasswd \
-    && echo "user ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-
-# Generate SSH keys for user
-RUN if [ ! -f /home/user/.ssh/id_rsa ]; then \
-    ssh-keygen -t rsa -N '' -f /home/user/.ssh/id_rsa; \
-    fi && \
-    cat /home/user/.ssh/id_rsa.pub >> /home/user/.ssh/authorized_keys && \
-    chmod 600 /home/user/.ssh/authorized_keys && \
-    chown -R user:user /home/user/.ssh /shared
-
-# Expose SSH port
-EXPOSE 22
-
-# Switch to user
-USER user
-WORKDIR /home/user
-
-# Start SSH service
-CMD sudo /usr/sbin/sshd -D -e
 ```
 
 ```bash
@@ -505,17 +479,11 @@ Selected results for 64KB record size and 65536KB file size:
 
 The IOZone results were visualized in 3D graphs showing the relationship between file size, record size, and throughput for various operations. Below are the visualizations for both VMs and containers:
 
-![VM Write Performance](images/vm_write_performance.png)
-![Container Write Performance](images/container_write_performance.png)
-
-![VM Read Performance](images/vm_read_performance.png)
-![Container Read Performance](images/container_read_performance.png)
-
-![VM Random Read Performance](images/vm_random_read_performance.png)
-![Container Random Read Performance](images/container_random_read_performance.png)
-
-![VM Random Write Performance](images/vm_random_write_performance.png)
-![Container Random Write Performance](images/container_random_write_performance.png)
+#### Virtual Machines (Row 1) Containers (Row 2)
+| Write Performance | Read Performance | Random Read | Random Write |
+|-------------------|------------------|-------------|--------------|
+| ![VM Write](images/vm_write_performance.png) | ![VM Read](images/vm_read_performance.png) | ![VM Random Read](images/vm_random_read_performance.png) | ![VM Random Write](images/vm_random_write_performance.png) |
+| ![Container Write](images/container_write_performance.png) | ![Container Read](images/container_read_performance.png) | ![Container Random Read](images/container_random_read_performance.png) | ![Container Random Write](images/container_random_write_performance.png) |
 
 ## Network Performance Results
 
@@ -619,6 +587,7 @@ Based on the performance results, the following recommendations can be made:
 3. **Memory-Intensive Applications**: For applications requiring high memory bandwidth, containers provide a moderate advantage (3-4%).
 
 4. **Network-Dependent Services**: For services relying on network communication, containers offer a modest performance improvement (4.32%).
+
 
 ## Conclusion
 
