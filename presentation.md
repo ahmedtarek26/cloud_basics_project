@@ -185,6 +185,13 @@
 
 ## Conclusion
 
+|Feature | Virtual Machines | Container | 
+|---------|------------------|-----------|
+| Isolation |Strong |Limited |
+| Resource Efficiency | High Overhead | Low Overhead |
+| Startup Time | Slow | Fast |
+| Use Case | Multi-OS, Secure Environments | Lightweight, Scalable Applications |
+
 **Key Findings**:
 - Containers consistently outperform VMs across all metrics
 - Performance advantage ranges from 1.37% to 10.09%
