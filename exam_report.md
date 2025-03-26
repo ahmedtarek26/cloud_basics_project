@@ -16,6 +16,11 @@ A three-node cluster was set up with the following specifications:
   - Master: 192.168.56.1
   - Node01: 192.168.56.2
   - Node02: 192.168.56.3
+-	**Port Forwarding**: SSH ports were forwarded to allow remote access to the VMs. For example:
+    - Master: Host IP 127.0.0.1 -> Port 3022 → Guest Port 22
+    - Node01: Host IP 127.0.0.1 -> Port 4022 → Guest Port 22
+    - node02: Host IP 127.0.0.1 -> Port 5022 → Guest Port 22
+
 
 The VMs were configured with shared filesystem using NFS, and passwordless SSH access was established between nodes for seamless communication.
 
