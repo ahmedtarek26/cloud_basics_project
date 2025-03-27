@@ -141,7 +141,7 @@
 
 ## Performance Comparison Summary
 
-![Performance Comparison Chart](../images/hpcc_comparison.png)
+![Performance Comparison Chart](/images/hpcc_comparison.png)
 
 **Containers outperform VMs across all metrics**:
 - CPU: 0.36% - 5.85% better
