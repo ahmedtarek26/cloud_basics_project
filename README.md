@@ -1,7 +1,7 @@
 # Cloud Performance Testing
-
-This repository contains the implementation and results of a comprehensive cloud performance testing project comparing Virtual Machines (VMs) and Docker containers.
-
+# Abstract
+This project for cloud basics subject in my Master's in DSAI **@UNITS** (University of Trieste) Mathematics, Informatics and Geoscience Faculity.
+The repository contains the implementation and results of a comprehensive cloud performance testing project comparing Virtual Machines (VMs) and Docker containers.
 ## Project Overview
 
 The objective of this project is to evaluate and compare the performance of virtual machines and Docker containers using various performance testing tools. The test environment consists of three nodes (master, node01, and node02) connected via a host-only network, alongside Docker containers for containerized performance testing.
